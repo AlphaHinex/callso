@@ -1,6 +1,7 @@
 package org.hinex.alpha.callso;
 
 import java.io.ByteArrayInputStream;
+import java.io.UnsupportedEncodingException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
@@ -10,7 +11,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.util.Log;
 
-import com.lpr.LPR;
+import com.lpr.LPRProxy;
 
 public class Detector {
     
@@ -18,17 +19,34 @@ public class Detector {
     
     private Detector() { }
     
-    public static String detect(Context context, String path, int width, int height) {
-        LPR l = LPR.getInstance();
-        byte[] result = l.DetectLPR(ImageDisposer.dispose(path), width, height, 16, getSign(context));
-        return new String(result);
+    public static String detect(Context context, String path, int width, int height, String charsetName) {
+        String result = "";
+        short[] pixs;
+        byte[] sign;
+        byte[] bytes;
+        try {
+            pixs = ImageDisposer.dispose(path);
+            sign = getSign(context, charsetName);
+            bytes = LPRProxy.detect(pixs, width, height, 16, sign);
+            result = new String(bytes, charsetName);
+        } catch (UnsupportedEncodingException e) {
+            Log.e(TAG, e.getMessage(), e);
+        } finally {
+            bytes = null;
+            sign = null;
+            pixs = null;
+        }
+        return result;
     }
     
-    private static byte[] getSign(Context context) {
+    private static byte[] getSign(Context context, String charsetName) {
         if (context == null) {
             Log.e(TAG, "The passed in context SHOULD NOT NULL!");
+            return new byte[0];
         }
+        
         StringBuffer result = new StringBuffer();
+        byte[] bytes = null;
         try {
             String packageName = context.getPackageName();
             Log.d(TAG, "package name: " + packageName);
@@ -44,10 +62,12 @@ public class Detector {
             
             Log.d(TAG, "issuer name: " + cert.getIssuerDN().getName());
             Log.d(TAG, "serial number: " + cert.getSerialNumber());
+            
+            bytes = result.toString().getBytes(charsetName);
         } catch (Exception e) {
             Log.d(TAG, e.getMessage(), e);
         }
-        return result.toString().getBytes();
+        return bytes;
     }
 
 }

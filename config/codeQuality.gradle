@@ -15,10 +15,11 @@ findbugs {
 }
 
 tasks.withType(Checkstyle) {
-    exclude 'com/lpr/LPR.java'
+    exclude '**/com/lpr/**'
 }
 
 tasks.withType(FindBugs) {
+    exclude '**/com/lpr/**'
     reports {
         xml.enabled = false
         html.enabled = true
