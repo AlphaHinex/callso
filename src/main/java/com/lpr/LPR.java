@@ -6,7 +6,7 @@ public class LPR {
         System.out.println("LPRecognition");
     }
     
-    public native byte[] DetectLPR(byte[] pBytes, int width, int height, int maxsize, byte[] sign);
+    public native byte[] DetectLPR(short[] pixs, int width, int height, int maxsize, byte[] sign);
     
     private static LPR instance;
     
