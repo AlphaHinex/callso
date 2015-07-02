@@ -14,6 +14,10 @@ findbugs {
 	toolVersion = '2.0.3'
 }
 
+tasks.withType(Checkstyle) {
+    exclude 'com/lpr/LPR.java'
+}
+
 tasks.withType(FindBugs) {
     reports {
         xml.enabled = false
