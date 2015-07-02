@@ -15,3 +15,9 @@ repositories {
 dependencies {
     compile 'com.google.android:android:4.1.1.4' 
 }
+
+task obf(type:Exec) {
+    commandLine 'java', '-jar', 'config/obfuscate/allatori.jar', 'config/obfuscate/config.xml'
+}
+
+build.dependsOn obf
