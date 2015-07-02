@@ -1,0 +1,12 @@
+<config>
+    
+    <jars>
+        <jar in="./build/libs/callso.jar" out="./build/libs/obf-callso.jar"/>
+    </jars>
+    <keep-names>
+        <class access="private+"/>
+        <field access="private+"/>
+        <method access="private+"/>
+    </keep-names>
+    <property name="log-file" value="log.xml"/>
+</config>
