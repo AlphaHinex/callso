@@ -1,0 +1,17 @@
+apply from: "codeQuality.gradle"
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
+
+repositories {
+    maven {
+        url 'https://repo.gradle.org/gradle/libs'
+    }
+}
+
+dependencies {
+    compile 'com.google.android:android:4.1.1.4' 
+}

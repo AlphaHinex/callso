@@ -1,0 +1,22 @@
+apply plugin: 'checkstyle'
+apply plugin: 'findbugs'
+
+def configDir = new File(buildscript.sourceFile.parentFile.parentFile, 'config')
+
+ext.checkstyleConfigDir = "$configDir/checkstyle"
+
+checkstyle {
+    configFile = new File(checkstyleConfigDir, "checkstyle.xml")
+    configProperties.checkstyleConfigDir = checkstyleConfigDir
+}
+
+findbugs {
+	toolVersion = '2.0.3'
+}
+
+tasks.withType(FindBugs) {
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
