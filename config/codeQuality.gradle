@@ -11,15 +11,15 @@ checkstyle {
 }
 
 findbugs {
-	toolVersion = '2.0.3'
+    toolVersion = '2.0.3'
+    excludeFilter = file("$configDir/excludeFilter.xml")
 }
 
 tasks.withType(Checkstyle) {
-    exclude '**/com/lpr/**'
+    exclude 'com/lpr/**'
 }
 
 tasks.withType(FindBugs) {
-    exclude '**/com/lpr/**'
     reports {
         xml.enabled = false
         html.enabled = true
