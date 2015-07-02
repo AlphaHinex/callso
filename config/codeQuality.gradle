@@ -3,7 +3,7 @@ apply plugin: 'findbugs'
 
 def configDir = new File(buildscript.sourceFile.parentFile.parentFile, 'config')
 
-ext.checkstyleConfigDir = "$configDir/checkstyle"
+ext.checkstyleConfigDir = "$configDir"
 
 checkstyle {
     configFile = new File(checkstyleConfigDir, "checkstyle.xml")
