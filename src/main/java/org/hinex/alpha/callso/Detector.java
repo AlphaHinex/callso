@@ -45,7 +45,6 @@ public class Detector {
             return new byte[0];
         }
         
-        StringBuffer result = new StringBuffer();
         byte[] bytes = null;
         try {
             String packageName = context.getPackageName();
@@ -56,14 +55,12 @@ public class Detector {
             CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
             X509Certificate cert = (X509Certificate) certFactory.generateCertificate(new ByteArrayInputStream(sign.toByteArray()));
             
-            result.append(cert.getIssuerDN().getName())
-                  .append("; ")
-                  .append(cert.getSerialNumber());
+            String issuerName = cert.getIssuerDN().getName();
+            String serialNumber = cert.getSerialNumber() + "";
+            Log.d(TAG, "issuer name: " + issuerName);
+            Log.d(TAG, "serial number: " + serialNumber);
             
-            Log.d(TAG, "issuer name: " + cert.getIssuerDN().getName());
-            Log.d(TAG, "serial number: " + cert.getSerialNumber());
-            
-            bytes = result.toString().getBytes(charsetName);
+            bytes = (issuerName + "; " + serialNumber).toString().getBytes(charsetName);
         } catch (Exception e) {
             Log.d(TAG, e.getMessage(), e);
         }
