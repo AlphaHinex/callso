@@ -17,7 +17,7 @@ dependencies {
 }
 
 task obf(type:Exec) {
-    commandLine 'java', '-jar', 'config/obfuscate/allatori.jar', 'config/obfuscate/config.xml'
+    commandLine 'java', '-jar', 'config/proguard/proguard-base-5.2.1.jar', '@config/proguard/myconfig.pro'
 }
 
 build.dependsOn obf

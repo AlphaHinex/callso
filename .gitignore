@@ -99,4 +99,4 @@ gradle-app.setting
 
 
 ### obfuscate
-config/obfuscate/log.xml
+config/allatori/log.xml
