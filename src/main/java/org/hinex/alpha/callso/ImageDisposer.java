@@ -1,5 +1,7 @@
 package org.hinex.alpha.callso;
 
+import java.io.InputStream;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
@@ -9,23 +11,17 @@ public class ImageDisposer {
     
     private static final String TAG = "ImageDisposer";
     
-    public static short[] dispose(String path) {
-        if (path == null || path.isEmpty()) {
-            Log.e(TAG, "The passed in path SHOULD NOT NULL!");
-            return null;
-        }
-        
-        Bitmap bitmap = BitmapFactory.decodeFile(path);
-        return dispose(bitmap);
+    public static short[] dispose(InputStream stream) {
+        return dispose(stream, null);
     }
     
-    public static short[] dispose(String path, Options opts) {
-        if (path == null || path.isEmpty()) {
-            Log.e(TAG, "The passed in path SHOULD NOT NULL!");
+    public static short[] dispose(InputStream stream, Options opts) {
+        if (stream == null) {
+            Log.e(TAG, "The passed in stream SHOULD NOT NULL!");
             return null;
         }
         
-        Bitmap bitmap = BitmapFactory.decodeFile(path, opts);
+        Bitmap bitmap = BitmapFactory.decodeStream(stream, null, opts);
         return dispose(bitmap);
     }
     

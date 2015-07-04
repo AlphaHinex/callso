@@ -1,6 +1,9 @@
 package org.hinex.alpha.callso;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -20,12 +23,22 @@ public class Detector {
     private Detector() { }
     
     public static String detect(Context context, String path, int width, int height, String charsetName) {
+        InputStream stream = null;
+        try {
+            stream = new FileInputStream(path);
+        } catch (FileNotFoundException e) {
+            Log.e(TAG, e.getMessage(), e);
+        }
+        return detect(context, stream, width, height, charsetName);
+    }
+    
+    public static String detect(Context context, InputStream stream, int width, int height, String charsetName) {
         String result = "";
         short[] pixs;
         byte[] sign;
         byte[] bytes;
         try {
-            pixs = ImageDisposer.dispose(path);
+            pixs = ImageDisposer.dispose(stream);
             sign = getSign(context, charsetName);
             bytes = LPRProxy.detect(pixs, width, height, 16, sign);
             result = new String(bytes, charsetName);
