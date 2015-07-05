@@ -9,11 +9,7 @@ public class LPRProxy {
             return new byte[0];
         }
         
-        byte[] bytes = new byte[pixs.length];
-        for (int i = 0; i < bytes.length; i++) {
-            bytes[i] = (byte) pixs[i];
-        }
-        return LPR.getInstance().DetectLPR(bytes, width, height, maxsize);
+        return LPR.getInstance().DetectLPR(pixs, width, height, maxsize);
     }
 
 }
