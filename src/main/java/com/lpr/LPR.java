@@ -3,7 +3,7 @@ package com.lpr;
 public class LPR {
     
     static {
-        System.out.println("LPRecognition");
+        System.loadLibrary("LPRecognition");
     }
     
     public native byte[] DetectLPR(short[] pixs, int width, int height, int maxsize);
