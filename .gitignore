@@ -100,3 +100,8 @@ gradle-app.setting
 
 ### obfuscate
 config/allatori/log.xml
+
+
+### ndk build
+libs/
+obj/
