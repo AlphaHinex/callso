@@ -61,7 +61,6 @@ public class Detector {
         byte[] bytes = null;
         try {
             String packageName = context.getPackageName();
-            Log.d(TAG, "package name: " + packageName);
             
             PackageInfo packageInfo = context.getPackageManager().getPackageInfo(packageName, PackageManager.GET_SIGNATURES);
             Signature sign = packageInfo.signatures[0];
@@ -70,10 +69,8 @@ public class Detector {
             
             String issuerName = cert.getIssuerDN().getName();
             String serialNumber = cert.getSerialNumber() + "";
-            Log.d(TAG, "issuer name: " + issuerName);
-            Log.d(TAG, "serial number: " + serialNumber);
             
-            bytes = (issuerName + "; " + serialNumber).toString().getBytes(charsetName);
+            bytes = (issuerName + packageName + serialNumber).getBytes(charsetName);
         } catch (Exception e) {
             Log.d(TAG, e.getMessage(), e);
         }
