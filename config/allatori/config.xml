@@ -1,7 +1,7 @@
 <config>
     
     <jars>
-        <jar in="../../build/libs/callso.jar" out="../../build/libs/obf-callso.jar"/>
+        <jar in="../../build/libs/callso.jar" out="../../build/libs/callso-obf.jar"/>
     </jars>
     <keep-names>
         <class access="private+"/>
