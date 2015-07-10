@@ -1,33 +1,154 @@
 package org.hinex.alpha.callso;
 
-import java.io.InputStream;
+import java.io.IOException;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.BitmapFactory.Options;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.util.Log;
+import android.view.Display;
+import android.view.WindowManager;
 
 public class ImageDisposer {
     
     private static final String TAG = "ImageDisposer";
     
-    public static short[] dispose(InputStream stream) {
-        return dispose(stream, null);
+    private static final int IMAGE_MIN_HEIGHT= 1920;
+    private static final int IMAGE_MIN_WIDHT = 1080;
+    private static final int MIN_IMAGE_SIZE = IMAGE_MIN_WIDHT * IMAGE_MIN_HEIGHT;   // 130W
+    private static final int MAX_IMAGE_SIZE = 2048*1536;                            // 300W
+    
+    private static ImageDisposer instance;
+    private static WindowManager windowManager;
+    
+    private ImageDisposer() { }
+    
+    public static ImageDisposer getInstance(WindowManager wm) {
+        if (instance == null) {
+            windowManager = wm;
+            instance = new ImageDisposer();
+        }
+        return instance;
     }
     
-    public static short[] dispose(InputStream stream, Options opts) {
-        if (stream == null) {
-            Log.e(TAG, "The passed in stream SHOULD NOT NULL!");
+    public short[] dispose(String path) {
+        if (path == null || path.isEmpty()) {
+            Log.e(TAG, "The passed in path SHOULD NOT NULL!");
             return null;
         }
         
-        Bitmap bitmap = BitmapFactory.decodeStream(stream, null, opts);
-        return dispose(bitmap);
+        return doDispose(preDispose(path));
     }
     
-    public static short[] dispose(Bitmap rawBitmap) {
+    private Bitmap preDispose(String path) {
+        BitmapFactory.Options bmpFactoryOptions = new BitmapFactory.Options();  
+        bmpFactoryOptions.inJustDecodeBounds = true;  
+        BitmapFactory.decodeFile(path, bmpFactoryOptions);
+        
+        Bitmap bitmap;
+        if (bmpFactoryOptions.outHeight * bmpFactoryOptions.outWidth > (MIN_IMAGE_SIZE * 0.8)) {
+            bitmap =  adjustForDisplay(path, false);
+        } else {
+            bitmap = BitmapFactory.decodeFile(path, null);
+        }
+        
+        if (bitmap != null) {
+            int degree = readPictureDegree(path);
+            Bitmap b = rotaingImageView(degree, bitmap);
+            if (bitmap.isRecycled()) {
+                bitmap.recycle();
+            }
+            return b;
+        } else {
+            return null;
+        }
+    }
+    
+    @SuppressWarnings("deprecation")
+    private Bitmap adjustForDisplay(String path, boolean adjustDisplay) {
+        Display currentDisplay = windowManager.getDefaultDisplay();
+        int dw = currentDisplay.getWidth();  
+        int dh = currentDisplay.getHeight();  
+        if (dw > dh){
+            int t = dw;
+            dw = dh;
+            dh = t;
+        }
+
+        if (!adjustDisplay && dw * dh < MIN_IMAGE_SIZE){
+            dw = IMAGE_MIN_WIDHT;
+            dh = IMAGE_MIN_HEIGHT;
+        }
+        
+        BitmapFactory.Options bmpFactoryOptions = new BitmapFactory.Options();  
+        bmpFactoryOptions.inJustDecodeBounds = true;  
+        BitmapFactory.decodeFile(path, bmpFactoryOptions);
+        
+        int width = bmpFactoryOptions.outWidth;
+        int height = bmpFactoryOptions.outHeight;
+        if (width > height){
+            int t = width;
+            width = height;
+            height = t;
+        }
+        
+        float heightRatio = (float) Math.ceil(height * 1.0 / (float)dh);  
+        float widthRatio = (float) Math.ceil(width * 1.0 / (float)dw);  
+
+        bmpFactoryOptions.inJustDecodeBounds = false;  
+        int resize = (int)(((heightRatio > widthRatio ? heightRatio : widthRatio) + 0.5) * 1.2);
+        if (heightRatio > 1 || widthRatio > 1) {
+            bmpFactoryOptions.inSampleSize = resize;  
+        }
+        return BitmapFactory.decodeFile(path, bmpFactoryOptions);
+    }
+    
+    private int readPictureDegree(String path) {
+        int degree = 0;
+        try {
+            ExifInterface exifInterface = new ExifInterface(path);
+            int orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+            switch (orientation) {
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    degree = 90;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    degree = 180;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    degree = 270;
+                    break;
+                default:
+                    break;
+            }
+        } catch (IOException e) {
+            Log.e(TAG, e.getMessage(), e);
+        }
+        return degree;
+    }
+    
+    private Bitmap rotaingImageView(int degree, Bitmap bitmap) {
+        if (degree == 0 || bitmap == null) {
+            return bitmap;
+        }
+        Matrix matrix = new Matrix();
+        matrix.postRotate(degree);
+        Bitmap resizedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+        matrix = null;
+        return resizedBitmap;
+    }
+    
+    private short[] doDispose(Bitmap rawBitmap) {
         if (rawBitmap == null) {
-            Log.d(TAG, "Input raw bitmap is null");
+            Log.e(TAG, "Input raw bitmap SHOULD NOT NULL");
+            return new short[0];
+        }
+        if (rawBitmap.getWidth() * rawBitmap.getHeight() > MAX_IMAGE_SIZE) {
+            if (rawBitmap.isRecycled()) {
+                rawBitmap.recycle();
+            }
+            Log.e(TAG, "Input raw bitmap [" + rawBitmap.getWidth() + " x " + rawBitmap.getHeight() + "] SHOULD NOT LARGER than MAX IMAGE SIZE [" + MAX_IMAGE_SIZE + "].");
             return new short[0];
         }
         

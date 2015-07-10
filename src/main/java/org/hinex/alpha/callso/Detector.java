@@ -1,9 +1,6 @@
 package org.hinex.alpha.callso;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -13,33 +10,43 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.util.Log;
+import android.view.WindowManager;
 
 import com.lpr.LPRProxy;
 
 public class Detector {
     
     private static final String TAG = "Detector";
+
+    private static Detector instance;
+    private static Context context;
+    private static WindowManager windowManager;
+    private static String charsetName;
     
     private Detector() { }
     
-    public static String detect(Context context, String path, int width, int height, String charsetName) {
-        InputStream stream = null;
-        try {
-            stream = new FileInputStream(path);
-        } catch (FileNotFoundException e) {
-            Log.e(TAG, e.getMessage(), e);
+    public static Detector getInstance(Context ctx, WindowManager manager, String encoding) {
+        if (instance == null) {
+            if (ctx == null || manager == null) {
+                Log.e(TAG, "The passed in context or window manager SHOULD NOT NULL!");
+                return null;
+            }
+            context = ctx;
+            windowManager = manager;
+            charsetName = encoding;
+            instance = new Detector();
         }
-        return detect(context, stream, width, height, charsetName);
+        return instance;
     }
     
-    public static String detect(Context context, InputStream stream, int width, int height, String charsetName) {
+    public String detect(String path, int width, int height) {
         String result = "";
         short[] pixs;
         byte[] sign;
         byte[] bytes;
         try {
-            pixs = ImageDisposer.dispose(stream);
-            sign = getSign(context, charsetName);
+            pixs = ImageDisposer.getInstance(windowManager).dispose(path);
+            sign = getSign();
             bytes = LPRProxy.detect(pixs, width, height, 16, sign);
             result = new String(bytes, charsetName);
         } catch (UnsupportedEncodingException e) {
@@ -52,12 +59,7 @@ public class Detector {
         return result;
     }
     
-    private static byte[] getSign(Context context, String charsetName) {
-        if (context == null) {
-            Log.e(TAG, "The passed in context SHOULD NOT NULL!");
-            return new byte[0];
-        }
-        
+    private static byte[] getSign() {
         byte[] bytes = null;
         try {
             String packageName = context.getPackageName();
@@ -72,7 +74,7 @@ public class Detector {
             
             bytes = (issuerName + packageName + serialNumber).getBytes(charsetName);
         } catch (Exception e) {
-            Log.d(TAG, e.getMessage(), e);
+            Log.e(TAG, e.getMessage(), e);
         }
         return bytes;
     }
