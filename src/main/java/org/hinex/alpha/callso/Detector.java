@@ -39,15 +39,16 @@ public class Detector {
         return instance;
     }
     
-    public String detect(String path, int width, int height) {
+    public String detect(String path) {
         String result = "";
         short[] pixs;
         byte[] sign;
         byte[] bytes;
         try {
-            pixs = ImageDisposer.getInstance(windowManager).dispose(path);
+            ImageDisposer instance = ImageDisposer.getInstance(windowManager);
+            pixs = instance.dispose(path);
             sign = getSign();
-            bytes = LPRProxy.detect(pixs, width, height, 16, sign);
+            bytes = LPRProxy.detect(pixs, instance.getWidth(), instance.getHeight(), 16, sign);
             result = new String(bytes, charsetName);
         } catch (UnsupportedEncodingException e) {
             Log.e(TAG, e.getMessage(), e);

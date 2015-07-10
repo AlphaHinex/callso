@@ -21,6 +21,8 @@ public class ImageDisposer {
     
     private static ImageDisposer instance;
     private static WindowManager windowManager;
+    private int width;
+    private int height;
     
     private ImageDisposer() { }
     
@@ -32,6 +34,14 @@ public class ImageDisposer {
         return instance;
     }
     
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
     public short[] dispose(String path) {
         if (path == null || path.isEmpty()) {
             Log.e(TAG, "The passed in path SHOULD NOT NULL!");
@@ -144,22 +154,20 @@ public class ImageDisposer {
             Log.e(TAG, "Input raw bitmap SHOULD NOT NULL");
             return new short[0];
         }
-        if (rawBitmap.getWidth() * rawBitmap.getHeight() > MAX_IMAGE_SIZE) {
+        width = rawBitmap.getWidth();
+        height = rawBitmap.getHeight();
+        if (width * height > MAX_IMAGE_SIZE) {
             if (rawBitmap.isRecycled()) {
                 rawBitmap.recycle();
             }
-            Log.e(TAG, "Input raw bitmap [" + rawBitmap.getWidth() + " x " + rawBitmap.getHeight() + "] SHOULD NOT LARGER than MAX IMAGE SIZE [" + MAX_IMAGE_SIZE + "].");
+            Log.e(TAG, "Input raw bitmap [" + width + " x " + height + "] SHOULD NOT LARGER than MAX IMAGE SIZE [" + MAX_IMAGE_SIZE + "].");
             return new short[0];
         }
         
-        int rawHeight = rawBitmap.getHeight();
-        int rawWidth = rawBitmap.getWidth();
-        int size = rawHeight * rawWidth;
-        
+        int size = width * height;
         int[] pix = new int[size];
         short[] pixs = new short[size * 3];
-        Log.d(TAG, "Start to get pixes ...");
-        rawBitmap.getPixels(pix, 0, rawWidth, 0, 0, rawWidth, rawHeight);
+        rawBitmap.getPixels(pix, 0, width, 0, 0, width, height);
         if (!rawBitmap.isRecycled()) {
             rawBitmap.recycle();
         }
