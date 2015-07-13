@@ -1,14 +1,9 @@
 package org.hinex.alpha.callso;
 
-import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
+import java.security.MessageDigest;
 
 import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.util.Log;
 import android.view.WindowManager;
 
@@ -64,16 +59,9 @@ public class Detector {
         byte[] bytes = null;
         try {
             String packageName = context.getPackageName();
-            
-            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(packageName, PackageManager.GET_SIGNATURES);
-            Signature sign = packageInfo.signatures[0];
-            CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
-            X509Certificate cert = (X509Certificate) certFactory.generateCertificate(new ByteArrayInputStream(sign.toByteArray()));
-            
-            String issuerName = cert.getIssuerDN().getName();
-            String serialNumber = cert.getSerialNumber() + "";
-            
-            bytes = (issuerName + packageName + serialNumber).getBytes(charsetName);
+            String input = "CN=whf, PKG=" + packageName + ", O=hinex";
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            bytes = digest.digest(input.getBytes("utf8"));
         } catch (Exception e) {
             Log.e(TAG, e.getMessage(), e);
         }
