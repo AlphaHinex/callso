@@ -16,14 +16,8 @@ dependencies {
     compile 'com.google.android:android:4.1.1.4' 
 }
 
-task obf(type:Exec) {
-    commandLine 'java', '-jar', 'config/allatori/allatori.jar', 'config/allatori/config.xml' 
-}
-
-build.dependsOn obf
-
 task min(type:Exec) {
-    commandLine 'java', '-jar', 'config/proguard/proguard-base-5.2.1.jar', '@config/proguard/myconfig.pro'
+    commandLine 'java', '-jar', 'config/allatori/allatori.jar', 'config/allatori/config.xml' 
 }
 
 build.dependsOn min
