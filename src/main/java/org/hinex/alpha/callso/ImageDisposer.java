@@ -1,8 +1,12 @@
 package org.hinex.alpha.callso;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
@@ -40,6 +44,28 @@ public class ImageDisposer {
 
     public int getHeight() {
         return height;
+    }
+    
+    public static String savePicToSdcard(Bitmap bitmap, String path,  String fileName) throws IOException {
+        if (bitmap == null) {  
+            return "";  
+        }
+
+        File destFile = new File(path, fileName);  
+        OutputStream os = null;  
+        try {  
+            os = new FileOutputStream(destFile);  
+            bitmap.compress(CompressFormat.JPEG, 100, os);  
+            os.flush();
+            os.close();
+        } catch (IOException e) {  
+            Log.e(TAG, e.getMessage(), e); 
+        } finally {
+            if (os != null) {
+                os.close();
+            }
+        }
+        return destFile.getAbsolutePath();
     }
 
     public short[] dispose(String path) {
