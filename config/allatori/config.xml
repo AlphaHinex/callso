@@ -3,14 +3,20 @@
     <jars>
         <jar in="../../build/libs/callso.jar" out="../../build/libs/callso-min.jar"/>
     </jars>
+
     <keep-names>
         <class template="class org.hinex.alpha.callso.Detector">
             <method access="public"/>
         </class>
     </keep-names>
+
     <ignore-classes>
         <class template="class org.hinex.alpha.callso.ImageDisposer"/>
     </ignore-classes>
+
     <property name="local-variables-naming" value="single-name"/>
     <property name="log-file" value="log.xml"/>
+
+    <expiry date="2015/08/02" string="EXPIRED!"/>
+
 </config>
