@@ -8,5 +8,7 @@
         <field access="private+"/>
         <method access="private+"/>
     </keep-names>
+    <property name="local-variables-naming" value="single-name"/>
+    <property name="string-encryption" value="disable" apply2class="class com.lpr.LPR"/>
     <property name="log-file" value="log.xml"/>
 </config>
