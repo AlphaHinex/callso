@@ -37,7 +37,7 @@ public class Detector {
     public String detect(String path) {
         String result = "";
         short[] pixs;
-        byte[] sign;
+        String sign;
         byte[] bytes;
         try {
             ImageDisposer instance = ImageDisposer.getInstance(windowManager);
@@ -55,17 +55,19 @@ public class Detector {
         return result;
     }
     
-    private static byte[] getSign() {
-        byte[] bytes = null;
+    private String getSign() throws UnsupportedEncodingException {
+        String result = "";
         try {
+            byte[] bytes = null;
             String packageName = context.getPackageName();
             String input = "CN=whf, PKG=" + packageName + ", O=hinex";
             MessageDigest digest = MessageDigest.getInstance("MD5");
             bytes = digest.digest(input.getBytes("utf8"));
+            result = new String(bytes, charsetName);
         } catch (Exception e) {
             Log.e(TAG, e.getMessage(), e);
         }
-        return bytes;
+        return result;
     }
 
 }
