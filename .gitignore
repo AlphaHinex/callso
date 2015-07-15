@@ -105,3 +105,4 @@ config/allatori/log.xml
 ### ndk build
 libs/
 obj/
+*.so
