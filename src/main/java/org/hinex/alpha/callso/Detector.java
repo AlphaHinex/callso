@@ -1,7 +1,6 @@
 package org.hinex.alpha.callso;
 
 import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
 
 import android.content.Context;
 import android.util.Log;
@@ -44,7 +43,9 @@ public class Detector {
             pixs = instance.dispose(path);
             sign = getSign();
             bytes = LPRProxy.detect(pixs, instance.getWidth(), instance.getHeight(), sign);
-            result = new String(bytes, charsetName);
+            if (bytes != null) {
+                result = new String(bytes, charsetName);
+            }
         } catch (UnsupportedEncodingException e) {
             Log.e(TAG, e.getMessage(), e);
         } finally {
@@ -58,12 +59,9 @@ public class Detector {
     private String getSign() throws UnsupportedEncodingException {
         String result = "";
         try {
-            byte[] bytes = null;
             String packageName = context.getPackageName();
             String input = "CN=whf, PKG=" + packageName + ", O=hinex";
-            MessageDigest digest = MessageDigest.getInstance("MD5");
-            bytes = digest.digest(input.getBytes("utf8"));
-            result = new String(bytes, charsetName);
+            result = MD5.hexdigest(input, "utf8");
         } catch (Exception e) {
             Log.e(TAG, e.getMessage(), e);
         }
