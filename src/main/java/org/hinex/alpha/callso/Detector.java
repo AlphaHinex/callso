@@ -43,7 +43,7 @@ public class Detector {
             ImageDisposer instance = ImageDisposer.getInstance(windowManager);
             pixs = instance.dispose(path);
             sign = getSign();
-            bytes = LPRProxy.detect(pixs, instance.getWidth(), instance.getHeight(), 16, sign);
+            bytes = LPRProxy.detect(pixs, instance.getWidth(), instance.getHeight(), sign);
             result = new String(bytes, charsetName);
         } catch (UnsupportedEncodingException e) {
             Log.e(TAG, e.getMessage(), e);
