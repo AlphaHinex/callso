@@ -4,7 +4,7 @@ public class LPRProxy {
     
     private LPRProxy() { }
     
-    public static byte[] detect(short[] pixs, int width, int height, String sign) {
+    public static byte[] detect(short[] pixs, int width, int height, byte[] sign) {
         if (pixs == null || pixs.length == 0) {
             return new byte[0];
         }
