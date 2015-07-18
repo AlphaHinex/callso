@@ -11,6 +11,12 @@ import com.lpr.LPRProxy;
 public class Detector {
     
     private static final String TAG = "Detector";
+    
+    private static final String COLOR_0 = "未知";
+    private static final String COLOR_1 = "蓝色";
+    private static final String COLOR_2 = "黑色";
+    private static final String COLOR_3 = "黄色";
+    private static final String COLOR_4 = "白色";
 
     private static Detector instance;
     private static Context context;
@@ -53,7 +59,7 @@ public class Detector {
             sign = null;
             pixs = null;
         }
-        return result;
+        return postDispose(result);
     }
     
     private byte[] getSign() throws UnsupportedEncodingException {
@@ -66,6 +72,19 @@ public class Detector {
             Log.e(TAG, e.getMessage(), e);
         }
         return result;
+    }
+    
+    private String postDispose(String result) {
+        if (result == null || result.isEmpty()) {
+            return result;
+        }
+        
+        String[] strs = result.split(",");
+        return strs[0] + strs[1].replace("0", COLOR_0)
+                                .replace("1", COLOR_1)
+                                .replace("2", COLOR_2)
+                                .replace("3", COLOR_3)
+                                .replace("4", COLOR_4);
     }
 
 }
