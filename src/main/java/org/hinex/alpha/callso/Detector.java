@@ -42,7 +42,7 @@ public class Detector {
     public String detect(String path) {
         String result = "";
         short[] pixs;
-        byte[] sign;
+        String sign;
         byte[] bytes;
         try {
             ImageDisposer instance = ImageDisposer.getInstance(windowManager);
@@ -62,12 +62,12 @@ public class Detector {
         return postDispose(result);
     }
     
-    private byte[] getSign() throws UnsupportedEncodingException {
-        byte[] result = null;
+    private String getSign() throws UnsupportedEncodingException {
+        String result = null;
         try {
             String packageName = context.getPackageName();
             String input = "CN=whf, PKG=" + packageName + ", O=hinex";
-            result = MD5.hexdigest(input, "utf8").getBytes("utf8");
+            result = MD5.hexdigest(input, "utf8");
         } catch (Exception e) {
             Log.e(TAG, e.getMessage(), e);
         }
@@ -80,7 +80,7 @@ public class Detector {
         }
         
         String[] strs = result.split(",");
-        return strs[0] + strs[1].replace("0", COLOR_0)
+        return strs[0] + "," + strs[1].replace("0", COLOR_0)
                                 .replace("1", COLOR_1)
                                 .replace("2", COLOR_2)
                                 .replace("3", COLOR_3)
