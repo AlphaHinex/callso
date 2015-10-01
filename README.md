@@ -6,12 +6,34 @@
 -------
 
 * jdk 1.6+
-* 将 `callso-min.jar` 进入项目
 
 
-接口调用
--------
+设置有效期
+--------
 
+可在 `config/allatori/config.xml` 配置文件中设置编译得到的 jar 包的使用有效期
+
+```
+<expiry date="2015/11/01" string="EXPIRED!"/>
+```
+
+
+编译
+---
+
+```
+# linux
+$ ./gradlew clean build
+# windows
+> gradlew clean build
+```
+
+
+app 项目接口调用
+--------------
+
+* 将编译得到的 `callso-min.jar`（`build/libs/`） 加入 app 项目
+* 将 `libLPRecognition.so` 放置在 app 项目 `src/main/jniLibs/armeabi` 下
 * 先通过 `Detector.getInstance(android.context.Context ctx, android.view.WindowManager manager, String encoding)` 获得 `Detector` 实例
 * 调用 `Detector` 实例的 `String detect(String path)` 方法传入识别图片路径进行识别，识别结果以字符串的形式返回，如 `闽D07Y73,蓝色`
 
@@ -23,9 +45,10 @@
 
 ```
 String sdPath = Environment.getExternalStorageDirectory().getPath();
-String testFile = ImageDisposer.savePicToSdcard(BitmapFactory.decodeResource(getResources(), R.raw.test),
-                                                sdPath + "/test", 
-                                                "test2.jpg");
+String testFile = ImageDisposer.savePicToSdcard(
+									BitmapFactory.decodeResource(getResources(), R.raw.test),
+									sdPath + "/test", 
+									"test2.jpg");
 String result = Detector.getInstance(this, this.getWindowManager(), "gbk")
                         .detect(testFile);
 Log.d("Demo", "Detector result is: " + result);
